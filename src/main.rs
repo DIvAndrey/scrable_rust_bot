@@ -25,7 +25,7 @@ pub fn get_score_and_new_field(
         return Err(());
     }
     let score = new_field.get_horizontal_move_score(old_field, word, dictionary, new_letters_counter.sum())?;
-    let score = score * 10_000 + on_hand_letters.score_sum() - new_letters_counter.score_sum();
+    let score = score * 10_000 + new_letters_counter.score_sum();
     Ok((score, new_field))
 }
 
