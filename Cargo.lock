@@ -33,7 +33,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "scrable_rust_bot"
+name = "scrabble_rust_bot"
 version = "0.1.0"
 dependencies = [
  "colored",
