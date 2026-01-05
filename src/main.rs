@@ -25,6 +25,7 @@ pub fn get_score_and_new_field(
         return Err(());
     }
     let score = new_field.get_horizontal_move_score(old_field, word, dictionary, new_letters_counter.sum())?;
+    let score = score * 10_000 + on_hand_letters.score_sum() - new_letters_counter.score_sum();
     Ok((score, new_field))
 }
 
@@ -32,9 +33,10 @@ pub fn solve(
     old_field: &Field,
     dictionary: &Dictionary,
     on_hand_letters: &CharCounter,
-) -> (i32, Field) {
+) -> (i32, i32, Field) {
     let mut best_score = 0;
     let mut best_field = old_field.clone();
+    let mut best_cnt = 0;
     for word_str in &dictionary.set {
         let word_letters = CharCounter::from_str(word_str);
         for i in 0..FIELD_WIDTH {
@@ -57,27 +59,32 @@ pub fn solve(
                 if score > best_score {
                     best_score = score;
                     best_field = new_field;
+                    best_cnt = 1;
+                } else if score == best_score {
+                    best_cnt += 1;
                 }
             }
         }
     }
-    (best_score, best_field)
+    (best_score, best_cnt, best_field)
 }
 
 fn main() {
     let dictionary = Dictionary::read_from_file("russian_nouns.txt");
     let (mut old_field, on_hand_letters) = Field::read_from_file("field.txt");
-    let (score1, new_field1) = solve(&old_field, &dictionary, &on_hand_letters);
+    let (score1, best_cnt1, new_field1) = solve(&old_field, &dictionary, &on_hand_letters);
     old_field.transpose();
-    let (score2, mut new_field2) = solve(&old_field, &dictionary, &on_hand_letters);
+    let (score2, best_cnt2, mut new_field2) = solve(&old_field, &dictionary, &on_hand_letters);
     old_field.transpose();
     new_field2.transpose();
-    let (score, new_field) = if score1 > score2 {
-        (score1, new_field1)
+    let (score, best_cnt, new_field) = if score1 > score2 {
+        (score1, best_cnt1, new_field1)
+    } else if score1 < score2 {
+        (score2, best_cnt2, new_field2)
     } else {
-        (score2, new_field2)
+        (score1, best_cnt1 + best_cnt2, new_field1)
     };
-    println!("Score: {score}\n");
+    println!("Score: {}, number of options: {best_cnt}.\n", score / 10_000);
     for i in 0..FIELD_WIDTH {
         for j in 0..FIELD_WIDTH {
             let mut c = new_field.cells[i][j];
@@ -92,4 +99,5 @@ fn main() {
         }
         println!();
     }
+    println!("а б в г д е ж з и й к л м н о");
 }

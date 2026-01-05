@@ -1,4 +1,4 @@
-use crate::{char_scorer::MIN_LETTER_CODE, field::EMPTY_CELL_CHAR};
+use crate::{char_scorer::{LOOKUP_TABLE, MIN_LETTER_CODE}, field::EMPTY_CELL_CHAR};
 
 #[derive(Clone)]
 pub struct CharCounter {
@@ -37,5 +37,13 @@ impl CharCounter {
 
     pub fn sum(&self) -> i32 {
         self.count.iter().map(|&x| x as i32).sum()
+    }
+
+    pub fn score_sum(&self) -> i32 {
+        let mut s = 0;
+        for i in 0..34 {
+            s += LOOKUP_TABLE[i] as i32 * self.count[i] as i32;
+        }
+        s
     }
 }

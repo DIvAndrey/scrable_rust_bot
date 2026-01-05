@@ -50,7 +50,7 @@ const fn make_lookup_table() -> [i8; 34] {
     table
 }
 
-const LOOKUP_TABLE: [i8; 34] = make_lookup_table();
+pub const LOOKUP_TABLE: [i8; 34] = make_lookup_table();
 
 pub fn get_char_score(c: char) -> i32 {
     assert!('а' <= c && c <= 'я' || c == 'ё', "{c}");
